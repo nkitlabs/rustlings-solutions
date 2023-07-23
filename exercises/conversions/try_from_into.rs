@@ -27,8 +27,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
 // integers, an array of three integers, and a slice of integers.
@@ -41,6 +39,20 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let color_codes = [tuple.0, tuple.1, tuple.2];
+        for val in color_codes {
+            if (val < 0 || val > 255) {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+
+        let converted_color_codes = color_codes.map(|x| x as u8);
+
+        Ok(Color {
+            red: converted_color_codes[0],
+            green: converted_color_codes[1],
+            blue: converted_color_codes[2],
+        })
     }
 }
 
@@ -48,6 +60,19 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        for val in arr {
+            if (val < 0 || val > 255) {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+
+        let converted_color_codes = arr.map(|x| x as u8);
+
+        Ok(Color {
+            red: converted_color_codes[0],
+            green: converted_color_codes[1],
+            blue: converted_color_codes[2],
+        })
     }
 }
 
@@ -55,6 +80,23 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+
+        for val in slice {
+            if (*val < 0 || *val > 255) {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+
+        let converted_color_codes: Vec<u8> = slice.iter().map(|x| *x as u8).collect();
+
+        Ok(Color {
+            red: converted_color_codes[0],
+            green: converted_color_codes[1],
+            blue: converted_color_codes[2],
+        })
     }
 }
 
